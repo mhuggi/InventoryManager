@@ -13,7 +13,7 @@ class IntegrationTest {
 
     @BeforeEach
     void setUp() throws IOException {
-        // Delete the inventory file if it exists to start fresh.
+        // Delete the inventory file if it exists to start from empty
         Files.deleteIfExists(Path.of(INVENTORY_FILE));
     }
 
@@ -22,7 +22,7 @@ class IntegrationTest {
         // Restore original System.in and System.out
         System.setIn(originalIn);
         System.setOut(originalOut);
-        // Clean up the inventory file.
+        // Clean up the inventory file
         Files.deleteIfExists(Path.of(INVENTORY_FILE));
     }
 
@@ -31,22 +31,22 @@ class IntegrationTest {
         InventoryManager inventoryManager = new InventoryManager();
         inventoryManager.clearInventory();
 
-        // Simulate valid user input: id, name, quantity, price.
+        // Simulate valid user input: id, name, quantity, price
         String simulatedInput = "1\nTest Product\n10\n19,99\n";
         System.setIn(new ByteArrayInputStream(simulatedInput.getBytes()));
 
         AddProduct addProduct = new AddProduct(inventoryManager);
         addProduct.execute();
 
-        // Verify that the product was added.
+        // Verify that the product was added
         Product productBeforeSave = inventoryManager.findProductById(1);
         assertNotNull(productBeforeSave, "Product should be added before saving.");
         assertEquals("Test Product", productBeforeSave.getName(), "Product name should match before saving.");
 
-        // Save the inventory to file.
+        // Save the inventory to file
         inventoryManager.saveInventory();
 
-        // Clear the in-memory inventory and reload from file.
+        // Clear the in-memory inventory and reload from file
         inventoryManager.clearInventory();
         assertEquals(0, inventoryManager.getInventory().size(), "Inventory should be empty after clearing.");
 
@@ -66,25 +66,25 @@ class IntegrationTest {
         InventoryManager inventoryManager = new InventoryManager();
         inventoryManager.clearInventory();
 
-        // Simulate input for the first product.
+        // Simulate input for the first product
         String simulatedInput1 = "2\nFirst Product\n5\n9,99\n";
         System.setIn(new ByteArrayInputStream(simulatedInput1.getBytes()));
         new AddProduct(inventoryManager).execute();
-        // Restore System.in for the next product.
+        // Restore System.in for the next product
         System.setIn(originalIn);
 
-        // Simulate input for the second product.
+        // Simulate input for the second product
         String simulatedInput2 = "3\nSecond Product\n15\n29,99\n";
         System.setIn(new ByteArrayInputStream(simulatedInput2.getBytes()));
         new AddProduct(inventoryManager).execute();
         System.setIn(originalIn);
 
-        // Verify that both products were added.
+        // Verify that both products were added
         assertEquals(2, inventoryManager.getInventory().size(), "There should be two products in the inventory.");
         assertNotNull(inventoryManager.findProductById(2), "First product should be present.");
         assertNotNull(inventoryManager.findProductById(3), "Second product should be present.");
 
-        // Clear the inventory and verify it is empty.
+        // Clear the inventory and verify it is empty
         inventoryManager.clearInventory();
         assertTrue(inventoryManager.getInventory().isEmpty(), "Inventory should be empty after clearing.");
     }
